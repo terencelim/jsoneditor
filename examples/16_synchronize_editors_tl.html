@@ -1,0 +1,82 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>JSONEditor | Synchronize two editors</title>
+
+  <link href="../dist/jsoneditor.css" rel="stylesheet" type="text/css">
+  <script src="../dist/jsoneditor.js"></script>
+
+  <style type="text/css">
+    body {
+      font-family: sans-serif;
+    }
+
+    #jsoneditor1,
+    #jsoneditor2 {
+      width: 400px;
+      height: 500px;
+      margin-right: 10px;
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+
+<p>
+  Keep two editors synchronized using <code>onChangeText</code> and <code>updateText</code>.
+</p>
+<p>
+  This can be done too with <code>onChangeJSON</code> and <code>update</code>, which can only be used in
+  modes <code>tree</code>, <code>form</code> (and <code>view</code>).
+</p>
+
+<table>
+  <tr>
+    <td><div id="jsoneditor1"></div></td>
+    <td>
+      <button id="toTree">&gt;</button>
+      <br>
+      <button id="toCode">&lt;</button>
+    </td>
+    <td><div id="jsoneditor2"></div></td>
+  </tr>
+</table>
+
+<script>
+  // create editor 1
+  const  editor1 = new JSONEditor(document.getElementById('jsoneditor1'), { mode: 'text', indentation: 4 }, {
+    onChangeText: function (jsonString) {
+      editor2.updateText(jsonString)
+    }
+  })
+
+  // create editor 2
+  const  editor2 = new JSONEditor(document.getElementById('jsoneditor2'), {
+    onChangeText: function (jsonString) {
+      // editor1.updateText(jsonString)
+      editor1.updateText(JSON.stringify(editor2.get(), null, 4))
+    }
+  })
+
+  // set initial data in both editors
+  const  json = {
+    'array': [1, 2, 3],
+    'boolean': true,
+    'null': null,
+    'number': 123,
+    'object': {'a': 'b', 'c': 'd'},
+    'string': 'Hello World'
+  }
+  editor1.set(json)
+  editor2.set(json)
+
+  document.getElementById("toTree").onclick = function(event) {
+    editor2.update(editor1.get());
+  };
+  // document.getElementById("toCode").onclick = function(event) {
+  //   editor1.update(editor2.get());
+  // };
+
+</script>
+</body>
+</html>
